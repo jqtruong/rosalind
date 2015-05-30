@@ -1,0 +1,16 @@
+#! /bin/bash -e
+
+gc_content() {
+    local dataset="$(<"$1")"
+    local fasta=($(echo "$dataset" | ./lib/fasta.awk))
+
+    # sample rendered string:
+    # Rosalind_6404:CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCCTCCCACTAATAATTCTGAGG
+    for string in "${fasta[@]}"; do
+        echo "${string%%:*} $(echo ${string##*:} | ./lib/gc_content.awk)"
+    done | sort -rnk2
+}
+
+top_gc_content() {
+    echo "$(gc_content "$1")" | head -n1 | awk '{ print $1 "\n" $2 }'
+}
