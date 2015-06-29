@@ -9,7 +9,7 @@ prot_encode() {
     local string=$(<"$1")
     local protein=
 
-    local aa=
+    local aa=                   # amino acid
     for (( i=0; i<${#string}; i+=3 )); do
         aa=${rna_codons[${string:$i:3}]}
         [[ $aa == Stop ]] && break

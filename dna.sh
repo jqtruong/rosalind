@@ -13,3 +13,7 @@ count_nts() {
 
     echo "${#NTS[A]} ${#NTS[C]} ${#NTS[G]} ${#NTS[T]}"
 }
+
+count_nts_awk() {
+    echo "$(<"$1")" | grep -o . | ./lib/nts.awk
+}
