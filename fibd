@@ -1,0 +1,48 @@
+#! /bin/bash -e
+
+. fib
+
+# Taking the same concept as `rabbit_fib' but given an extra paramater for a mortality rate.
+rabbit_fibd(){
+    fib_init $@
+
+    [[ ! $m ]] && echo "* ERROR: mortality rate (m) cannot be null *" && exit 1
+    
+    for (( i=$(( ${#fib[@]} )); i<$n; i++ )); do
+        total=0
+        for (( y=$(( i-2 )); y>=$(( i-m )); y-- )); do
+            if [[ $y -lt 0 ]]
+            then total=$(echo $total + 1 | bc)
+                 break
+            else total=$(echo $total + ${fib[$y]} | bc)
+            fi
+        done
+
+        fib+=($total)
+    done
+
+    fib_done
+}
+
+# To help finding a pattern, this writes a graph of what it looks like after `n' months with a `m' mortality rate.
+rabbit_fibd_graph() {
+    local data=
+    [ -f "$1" ] && data=($(<"$1")) || read -ra data <<< "$1" 
+    local n="${data[0]}" # month
+    local m="${data[1]}" # mortality rate
+    local k="${data[2]:-1}" # reproduction rate, 1 by default
+    declare -A fib_graph=(
+        [0]="0"
+    )
+
+    for (( i=1; i<$n; i++ )); do
+        # Set the next iteration to the current when passed as a column to `fibd_graph.awk'.
+        fib_graph[$i]=$(echo "${fib_graph[$(( i-1 ))]}" | \
+                               grep -Eo '[[:digit:]+]' | \
+                               lib/fibd_graph.awk -v m=$m k=$k)
+    done
+
+    for (( i=0; i<$n; i++ )); do
+        echo "$i: ${fib_graph[$i]}"
+    done
+}

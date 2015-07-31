@@ -1,0 +1,47 @@
+#! /bin/bash -e
+
+. lib/calc
+
+fib_init() {
+    [ -f "$1" ] && data=($(<"$1")) || read -ra data <<< $@
+    n="${data[0]}"              # index to retrieve
+    m="${data[1]}"              # mortality rate
+    k="${data[2]:-1}"           # multiplier, 1 by default
+
+    # assuming that index 0 and 1 always output 1...
+    [[ $n -le 1 ]] && echo 1 && exit 0
+
+    # get fib from or create file
+    mem="values/${FUNCNAME[1]}-mem.$m-$k"
+    [[ -f $mem ]] && fib=($(<$mem)) || touch $mem
+
+    # output found index if already calculated
+    [[ ${fib[$n]} ]] && echo ${fib[$n]} && exit 0
+
+    # init fib pattern
+    [[ ${#fib[@]} -eq 0 ]] && fib=(1 1)
+}
+
+fib_done() {
+    echo "${fib[@]}" > $mem
+    echo ${fib[$(( n-1 ))]}
+}
+
+# F(n) = F(n-1) + F(n-2) * k
+rabbit_fib() {
+    # Rosalind has another exercise called fibd which adds another
+    # parameter. To reuse my code, i take it into account for these
+    # exercises on fib.
+    [ -f "$1" ] && data=($(<"$1")) || read -ra data <<< "$1"
+    # If only two parameters are provided, then they are month (n) and
+    # reproduction rate (k).
+    [[ ${#data[@]} -lt 3 ]] && fib_init ${data[0]} 0 ${data[1]} || fib_init $@
+
+    for (( i=${#fib[@]}; i<$n; i++ )); do
+        n_1=${fib[$[ i-1 ]]}
+        n_2=${fib[$[ i-2 ]]}
+        fib+=( $( echo "$n_1 + $n_2 * $k" | bc ) )
+    done
+
+    fib_done
+}
