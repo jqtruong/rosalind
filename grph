@@ -1,0 +1,14 @@
+#! /bin/bash -e
+
+# for each node, grab $a and $z where
+# - $a - first $k bases
+# - $z - last $k bases
+# - $k - length of bases to match 
+
+grph() {
+    fasta=($( echo "$(<"$1")" | ./lib/fasta.awk ))
+    for f in "${fasta[@]}"; do
+        echo "$f"
+    done
+    
+}
