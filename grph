@@ -6,9 +6,9 @@
 # - $k - length of bases to match 
 
 grph() {
-    fasta=($( echo "$(<"$1")" | ./lib/fasta.awk ))
-    for f in "${fasta[@]}"; do
-        echo "$f"
-    done
-    
+    # fasta=( $( echo "$(<"$1")" | ./lib/fasta-grph.awk ) )
+    # for f in "${fasta[@]}"; do
+    #     echo "$f"
+    # done
+    echo "$(<"$1")" | ./lib/fasta-grph.awk -v k=3
 }
