@@ -1,31 +1,17 @@
 #! /bin/awk -f
 
-BEGIN {
-    id=""
-    string=""
-}
+########
+# main #
+########
+BEGIN { RS=">" }
 
-# FASTA lines that start with '>' specify an ID. As it loops through
-# the data rows, collected strings are stored for later printing.
-/^>/ {
-    if (id) {
-        fasta[id]=string
-        string=""
+NF {
+    id=$1
+    dna=""
+    for (i=2; i<=NF; i++) {
+        dna=dna $i
     }
-    id=substr($0, 2)
+    print id,dna
 }
 
-# Valid DNA data should only contain these bases: A, T/U, C, G.
-# FASTA data contains a DNA strand's bases on multiple lines.
-/^[ATUCG]+$/ {
-    string=string $0
-}
-
-END {
-    # Record last entry.
-    fasta[id]=string
-
-    for (id in fasta) {
-        print id ":" fasta[id]
-    }
-}
+END {}

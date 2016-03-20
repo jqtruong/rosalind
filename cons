@@ -3,10 +3,10 @@
 # Calculate the consensus string and the profile matrix.
 #
 # TODO: improve performance. I'm just using awk as a helper to do a
-# couple of very simple things. Also, I'm reusing `fasta.awk', which i
+# couple of very simple things. Also, I'm reusing `fasta.awk.old', which i
 # think i could have a written a better parser for this case...
 cons() {
-    local fasta=($( echo "$(<"$1")" | ./lib/fasta.awk ))
+    local fasta=($( echo "$(<"$1")" | ./lib/fasta.awk.old ))
     local bases=(A C G T)
     local As=() Cs=() Gs=() Ts=()
     local col= cons= str= winner=

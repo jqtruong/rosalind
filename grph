@@ -1,14 +1,35 @@
 #! /bin/bash -e
 
-# for each node, grab $a and $z where
-# - $a - first $k bases
-# - $z - last $k bases
-# - $k - length of bases to match 
+dir="$(dirname $BASH_SOURCE)"
+
+grph-feed() {
+    declare -A data=()
+    while read prefix id suffix; do
+        data[prefixes]+="$prefix\n"
+        data[suffixes]+="$suffix\n"
+        data[$suffix->]+="$id "
+        data[->$prefix]+="$id "
+    done
+
+    suffixes=($(printf "${data[suffixes]}" | sort -u))
+    for suffix in ${suffixes[@]}; do
+        grph-map "${data[$suffix->]}" "${data[->$suffix]}"
+    done
+}
+
+grph-map() {
+    local from=($1) \
+          to=($2)
+
+    [[ -z "$to" ]] && return
+    
+    for f in ${from[@]}; do
+        for t in ${to[@]}; do
+            [[ ! $f == $t ]] && echo $f $t
+        done
+    done
+}
 
 grph() {
-    # fasta=( $( echo "$(<"$1")" | ./lib/fasta-grph.awk ) )
-    # for f in "${fasta[@]}"; do
-    #     echo "$f"
-    # done
-    echo "$(<"$1")" | ./lib/fasta-grph.awk -v k=3
+    "$dir"/lib/fasta.awk "$1" | "$dir"/lib/grph.awk -v k=${2:-3} | grph-feed
 }

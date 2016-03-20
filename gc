@@ -2,7 +2,7 @@
 
 gc_content() {
     local dataset="$(<"$1")"
-    local fasta=($(echo "$dataset" | ./lib/fasta.awk))
+    local fasta=($(echo "$dataset" | ./lib/fasta.awk.old))
 
     # sample rendered string:
     # Rosalind_6404:CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCCTCCCACTAATAATTCTGAGG
