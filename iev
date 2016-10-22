@@ -1,0 +1,42 @@
+#! /bin/bash -ue
+
+# http://rosalind.info/problems/iev/
+
+. lib/calc
+
+GENOTYPES=(
+    AA-AA
+    AA-Aa
+    AA-aa
+    Aa-Aa
+    Aa-aa
+    aa-aa
+)
+
+DOMINANT_GENE_PERCENT=(
+    100
+    100
+    100
+    75
+    50
+    0
+)
+
+# Dominant expected offsprings.
+deo() {
+    [[ ! -f "$1" ]] && {
+        echo "$1 doesn't exist."
+        exit 1
+    }
+
+    local num_couples=( $(<"$1") ) \
+          n= p= col=()
+
+    for ((i=0; i<${#DOMINANT_GENE_PERCENT[@]}; i++)); do
+        n=${num_couples[$i]}
+        p=${DOMINANT_GENE_PERCENT[$i]}
+        col+=( $(calc scale=2\; $n \* $p / 100) )
+    done
+
+    calc "scale=2; 0$(printf '+ (%.2f * 2)' ${col[@]})"
+}

@@ -1,5 +1,6 @@
-#! /bin/bash
+#! /bin/bash -ue
 
 calc() {
-    awk "BEGIN { print $* }"
+    # e.g. calc scale=2\; 3/2 + 4 - .5 -> 5.00
+    echo "$@" | bc -l
 }
