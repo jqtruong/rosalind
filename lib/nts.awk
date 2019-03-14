@@ -1,5 +1,7 @@
 #! /bin/awk -f
 
+# prints out base counts for A, C, G, and T
+
 BEGIN {}
 
 {

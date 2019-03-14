@@ -1,6 +1,6 @@
 #! /bin/bash -ue
 
+# e.g. calc scale=2\; 3/2 + 4 - .5 -> 5.00
 calc() {
-    # e.g. calc scale=2\; 3/2 + 4 - .5 -> 5.00
     echo "$@" | bc -l
 }

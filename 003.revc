@@ -3,7 +3,7 @@
 reverse_complement() {
     . defaults/base-pairs
 
-    local rev=$(echo "${1^^}" | rev)
+    local rev=$(echo "$(<"$1")" | rev)
     local comp=
 
     for (( i=0; i<${#rev}; i++ )); do

@@ -2,7 +2,7 @@
 
 count_nts() {
     # upper case dna string
-    local DNA="${1^^}"
+    local DNA="$(<"$1")"
 
     declare -A NTS=(
         [A]="${DNA//[^A]}"
@@ -15,5 +15,7 @@ count_nts() {
 }
 
 count_nts_awk() {
-    echo "$(<"$1")" | grep -o . | ./lib/nts.awk
+    echo "$(<"$1")"   |         # contents of $1
+        grep -o .     |         # one letter at a time
+        ./lib/nts.awk
 }
