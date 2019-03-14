@@ -1,3 +1,5 @@
+#!/bin/bash
+
 declare -rA base_pairs=(
     [A]=T
     [C]=G

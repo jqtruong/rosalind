@@ -22,8 +22,7 @@ DOMINANT_GENE_PERCENT=(
     0
 )
 
-# Dominant expected offsprings.
-deo() {
+deo() {                         # Dominant Expected Offsprings
     [[ ! -f "$1" ]] && {
         echo "$1 doesn't exist."
         exit 1
