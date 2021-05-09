@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+#############
+# INIT VARS #
+#############
+export ROSALIND=$(git rev-parse --show-toplevel)
+
+########
+# MAIN #
+########
+$@

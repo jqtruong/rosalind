@@ -1,0 +1,12 @@
+#!/bin/bash
+
+######################
+# Nucleotides in DNA #
+######################
+
+nts=(
+    A                           # adenine
+    T                           # thymine
+    G                           # guanine
+    C                           # cytosine
+)

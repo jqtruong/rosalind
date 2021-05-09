@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#########
+# FUNCS #
+#########
+make_strand() {
+    for (( i=0; i<len; i++))
+    do echo -n ${nts[((RANDOM % 4))]}
+    done
+}
+
+#############
+# INIT VARS #
+#############
+. $ROSALIND/defaults/nts
+len=${1:-1000}

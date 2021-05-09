@@ -2,7 +2,7 @@
 
 declare -rA base_pairs=(
     [A]=T
-    [C]=G
-    [G]=C
     [T]=A
+    [G]=C
+    [C]=G
 )

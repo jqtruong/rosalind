@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#############
+# INIT VARS #
+#############
+. $ROSALIND/lib/make-strand 10
+
+########
+# MAIN #
+########
+strands=(
+    $(
+        for ((i=0; i<5; i++))
+        do echo "$(make_strand)"
+        done
+    )
+)
+
+printf -- "- %s\n" ${strands[@]}

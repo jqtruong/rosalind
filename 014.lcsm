@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#########
+# FUNCS #
+#########
+
+#############
+# INIT VARS #
+#############
+fasta=$($ROSALIND/lib/fasta.awk $1)
+
+########
+# MAIN #
+########
+exec 3<<<$fasta
+read -u3 -r strand1
+read -u3 -r strand2
+exec 3<&-
+
+# first, find lcsm between two strands 
+exec 3<<<$strand1
+
+# exec 3<&-
+
+# exec 4 <<< $strand2
