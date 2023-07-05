@@ -2,8 +2,11 @@
 
 # http://rosalind.info/problems/iev/
 
+# iev something Expected Value
+
 . lib/calc
 
+# if one parent has at least one dominant, ...
 GENOTYPES=(
     AA-AA
     AA-Aa
@@ -13,29 +16,47 @@ GENOTYPES=(
     aa-aa
 )
 
+# e.g. Aa-aa:
+## |   | A | a |
+## +---+---+---+
+## | a | 1 | 0 |
+## | a | 1 | 0 |
+# (1 + 0 + 1 + 0) / 4 = 1/2
 DOMINANT_GENE_PERCENT=(
-    100
-    100
-    100
-    75
-    50
-    0
+    1.00
+    1.00
+    1.00
+    0.75
+    0.50
+    0.0
 )
 
-deo() {                         # Dominant Expected Offsprings
+avg() {            # Average given a list of counts per group and a scale factor
     [[ ! -f "$1" ]] && {
         echo "$1 doesn't exist."
         exit 1
     }
 
-    local num_couples=( $(<"$1") ) \
-          n= p= col=()
+    local cpdgg=( $(<"$1") )    # Counts Per Dominant Gene Groups
+    local cs=$2                 # Count Scaling
+    local ccg=                  # Count in a Current Group
+    local dgpcp=                # Dominant Gene Percentage for Current Group
+    local norms=() # counts * percentages (i think that's called normalization...?)
 
     for ((i=0; i<${#DOMINANT_GENE_PERCENT[@]}; i++)); do
-        n=${num_couples[$i]}
-        p=${DOMINANT_GENE_PERCENT[$i]}
-        col+=( $(calc scale=2\; $n \* $p / 100) )
+        ccg=${cpdgg[$i]}
+        dgpcp=${DOMINANT_GENE_PERCENT[$i]}
+        norms+=( $(calc "scale=2; $ccg * $dgpcp") )
     done
 
-    calc "scale=2; 0$(printf '+ (%.2f * 2)' ${col[@]})"
+    # e.g. given `cpdgg' as "1 0 0 1 0 1", then the following will
+    # calculate:
+    ## scale=2; 0 + (1.00 * 2) + (0.00 * 2) + (0.00 * 2) + (0.75 * 2) + (0.00 *
+    ## 2) + (0.00 * 2)
+    # where the leading 0 to start with something.
+    calc "scale=2; 0$(printf " + (%.2f * $cs)" ${norms[@]})"
+}
+
+deo() {                         # Dominant Expected Offsprings
+    avg "$1" 2
 }

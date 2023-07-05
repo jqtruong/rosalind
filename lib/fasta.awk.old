@@ -8,6 +8,7 @@ BEGIN {
 # FASTA lines that start with '>' specify an ID. As it loops through
 # the data rows, collected strings are stored for later printing.
 /^>/ {
+    # we've reached a new FASTA Id, so store previous/current string.
     if (id) {
         fasta[id]=string
         string=""
@@ -15,16 +16,18 @@ BEGIN {
     id=substr($0, 2)
 }
 
-# Valid DNA data should only contain these bases: A, T/U, C, G.
+# valid DNA data should only contain these bases: A, T/U, C, G.
 # FASTA data contains a DNA strand's bases on multiple lines.
 /^[ATUCG]+$/ {
-    string=string $0
+    string=string $0            # append line(s) to string
 }
 
 END {
     # Record last entry.
     fasta[id]=string
 
+    # sample rendered string:
+    # Rosalind_6404:CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCCTCCCACTAATAATTCTGAGG
     for (id in fasta) {
         print id ":" fasta[id]
     }

@@ -3,18 +3,170 @@
 hamming_dist() {
     local strings=() string1= string2=
 
-    read -d '\n' -a strings <"$1"
-    string1=${strings[0]}
-    string2=${strings[1]}
+    exec 3<"$1"
+    IFS= read string1 <&3
+    IFS= read string2 <&3
+    exec 3<&-
 
-    [[ ${#string1} -ne ${#string2} ]] &&
-        echo "Strings must be of equal lengths to calculate the Hamming distance." >&2 &&
-        exit 1
+    # echo $count
+    echo "obase=2; $((4 & 5))" | bc
+}
 
-    local d=0
-    for (( i=0; i<${#string1}; i++ )); do
-        [ ${string1:$i:1} != ${string2:$i:1} ] && ((d++))
+a() {
+    local count=0    \
+          max_len=0  \
+          len1=${#1} \
+          len2=${#2}
+
+    max_len=$(( len1 > len2 ? len1 : len2 ))
+
+    for (( i=0; i<max_len; i++ ))
+    do [[ ${1:$i:1} = ${2:$i:1} ]] || ((++count))
     done
 
-    echo $d
+    echo $count
 }
+
+# character to integer values
+b() {
+    read A T G C <<<"$(printf "%x" \'A \'T \'G \'C)"
+    echo "$A $T $G $C"
+    local store=($A $T $G $C)
+
+    # create a randomized string of those integers
+    local string= 
+    for ((i=0; i<10; i++))
+    do string+=${store[RANDOM % 4]}
+    done
+    echo $string
+}
+
+c() {
+    read A T G C <<<"$(printf "%x " \'A \'T \'G \'C)"
+    echo $((A ^ T))
+    echo "$A | $T"
+    echo "obase=2; $A" | bc
+    echo "obase=2; $T" | bc
+    echo "obase=2; $((A ^ T))" | bc
+}
+
+rand_string() {
+    local lim=${1-10}
+
+    # create a randomized string of those integers
+    local string=
+    local base=
+    for ((i=0; i<lim; i++))
+    do
+        base=${store[RANDOM % 4]}
+        string+="$base"
+    done
+
+    echo $string
+}
+
+folding() {
+    local string1=$(rand_string)
+    local string2=$(rand_string)
+
+    echo >&2 $string1
+    echo >&2 $string2
+
+    paste <(fold -w2 <<<"$string1") <(fold -w2 <<<"$string2")
+}
+
+file_descriptors() {
+    local string1=$(rand_string)
+    local string2=$(rand_string)
+
+    # fold -w2 <<<"$string1"
+    # fold -w2 <<<"$string2"
+
+    exec 3<<<"$(fold -w2 <<<"$string1")"
+    exec 4<<<"$(fold -w2 <<<"$string2")"
+    while read base1 <&3 && read base2 <&4
+    do echo "$base1 : $base2"
+    done
+
+    exec 3<&-
+    exec 4<&-
+}
+
+time_methods() {
+    read A T G C <<<"$(printf "%x " \'A \'T \'G \'C)"
+    store=($A $T $G $C)
+
+    local n=${1-1000}
+
+    # fastest!
+    local a1=($(printf "%x " $(shuf -e \'A \'T \'G \'C -n $n -r)))
+    local a2=($(printf "%x " $(shuf -e \'A \'T \'G \'C -n $n -r)))
+
+    local b1=($(shuf -e A T G C -n $n -r))
+    local b2=($(shuf -e A T G C -n $n -r))
+
+    local c1=($(shuf -e 41 54 47 43 -n $n -r))
+    local c2=($(shuf -e 41 54 47 43 -n $n -r))    
+
+    local results=()
+
+    (
+        time for ((i=0; i<n; i++)); do results+=($([[ ${a1[i]} == ${a2[i]} ]]; echo $?)); done
+        echo done a
+    ) &
+    
+    (
+        time for ((i=0; i<n; i++)); do results+=($([[ ${b1[i]} == ${b2[i]} ]]; echo $?)); done
+        echo done b
+    ) &
+
+    (
+        time for ((i=0; i<n; i++)); do results+=($([[ ${c1[i]} == ${c2[i]} ]]; echo $?)); done
+        echo done c
+    ) &
+}
+
+binary_bases() {
+    # A 00 0
+    # G 01 1
+    # C 10 2
+    # T 11 3
+
+    read A G C T <<< $(for ((i=0; i<4; i++))
+                       do
+                           echo "obase=2; $i" | bc | {
+                               read binary_value
+                               printf "2#%02d " $binary_value
+                           }
+                       done)
+
+    echo "A: $A = $(( A ))"
+    echo "G: $G = $(( G ))"
+    echo "C: $C = $(( C ))"
+    echo "T: $T = $(( T ))"
+
+    [[ $(( A ^ T )) == $(( 2#11 )) ]] && echo "A and T fit"
+    [[ $(( A ^ G )) == $(( 2#11 )) ]] || echo "A and G do not fit"
+    [[ $(( C ^ G )) == $(( 2#11 )) ]] && echo "C and G fit"
+    [[ $(( C ^ T )) == $(( 2#11 )) ]] || echo "C and T do not fit"
+}
+
+#############
+# INIT VARS #
+#############
+# A: 00 (0)
+# G: 01 (1)
+# C: 10 (2)
+# T: 11 (3)
+read A G C T <<< $(while read i
+                   do
+                       echo "obase=2; $i" | bc | {
+                           read binary_value
+                           printf "2#%02d " $binary_value
+                       }
+                   done <<< $(seq 0 3))
+
+
+########
+# MAIN #
+########

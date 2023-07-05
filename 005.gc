@@ -1,13 +1,13 @@
 #! /bin/bash -e
 
 gc_content() {
-    local dataset="$(<"$1")"
-    local fasta=($(echo "$dataset" | ./lib/fasta.awk.old))
+    local fasta=($(echo "$(<"$1")" | ./lib/fasta.awk.old))
 
-    # sample rendered string:
-    # Rosalind_6404:CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCCTCCCACTAATAATTCTGAGG
-    for string in "${fasta[@]}"; do
-        echo "${string%%:*} $(echo ${string##*:} | ./lib/gc_content.awk)"
+    for string in "${fasta[@]}"
+    do
+        fasta_id=${string%%:*}
+        percent=$(echo ${string##*:} | $ROSALIND/lib/gc_content.awk)
+        echo "$fasta_id $percent"
     done | sort -rnk2
 }
 

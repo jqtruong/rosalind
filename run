@@ -3,9 +3,11 @@
 #############
 # INIT VARS #
 #############
-export ROSALIND=$(git rev-parse --show-toplevel)
+export ROSALIND=$(dirname "$BASH_SOURCE")
 
 ########
 # MAIN #
 ########
-$@
+source "$ROSALIND/$1"
+shift
+$*

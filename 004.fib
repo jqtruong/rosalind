@@ -1,21 +1,21 @@
 #! /bin/bash -e
 
-. lib/fib
+. $ROSALIND/lib/fib
 
 # F(n) = F(n-1) + F(n-2) * k
 rabbit_fib() {
     local data=($(<"$1"))       # contains "n k"
 
-    fib_mem_init ${data[0]} 0 ${data[1]}
+    fib_mem_init ${data[0]} 0 ${data[1]} # default m to 0
 
-    if [[ ${fib[n]} ]]
-    then echo ${fib[n]}
-    else for (( i=${#fib[@]}; i<$n; i++ ))
-         do n_1=${fib[((i-1))]}
-            n_2=${fib[((i-2))]}
-            fib+=( $(calc "$n_1 + $n_2 * $k") )
-         done
+    if [[ ${fib[((n-1))]} ]]
+    then echo ${fib[((n-1))]}
+    else
+        for (( i=${#fib[@]}; i<$n; i++ ))
+        do n_1=${fib[((i-1))]}
+           n_2=${fib[((i-2))]}
+           fib+=( $(calc "$n_1 + $n_2 * $k") )
+        done
+        fib_done
     fi
-
-    fib_done
 }

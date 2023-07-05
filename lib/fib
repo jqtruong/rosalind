@@ -1,25 +1,25 @@
 #!/bin/bash
 
-. calc
+. $ROSALIND/lib/calc
 
-fib=                            # array of values for $n
-n=                              # index (e.g. month) to retrieve
-m=                              # mortality rate
-k=                              # multiplier, 1 by default
+fib= # array of values for $n
+n=   # index (e.g. month) to retrieve
+m=   # mortality rate
+k=   # multiplier, 1 by default
 
-# creates or reuse a file, assigned to $mem, saved under ./values/, to collect
-# previously calculated values (e.g. # of rabbit offsprings after n-months.
+# creates or reuses a file, saved under ./values/, to collect previously
+# calculated values (e.g. of rabbit offsprings after n-months.)
 fib_mem_init() {
     read -r n m k <<< $@
 
     # fib(0) and fib(1) return 1
     [[ $n -le 1 ]] && echo 1 && return
 
-    # load or create the fib memoized file
+    # load or create the pre-calculated fib file
     mem="values/${FUNCNAME[1]}-mem.$m-$k"
     if [[ -f $mem ]]
-    then fib=($(<$mem))
-    else touch $mem; fib=(1 1)
+    then fib=($(<$mem))         # array of values in $mem
+    else touch $mem; fib=(1 1)  # default array
     fi
 }
 
